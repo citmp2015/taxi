@@ -1,4 +1,4 @@
-package org.tuberlin.de;
+package org.tuberlin.de.read_data;
 
 import org.opengis.geometry.primitive.Point;
 

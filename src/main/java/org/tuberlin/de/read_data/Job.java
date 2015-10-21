@@ -1,4 +1,4 @@
-package org.tuberlin.de;
+package org.tuberlin.de.read_data;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
@@ -23,18 +23,11 @@ import org.apache.flink.api.java.ExecutionEnvironment;
  * limitations under the License.
  */
 
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
-import org.opengis.geometry.primitive.Point;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.DoubleSummaryStatistics;
 
 /**
  * Skeleton for a Flink Job.

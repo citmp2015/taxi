@@ -1,8 +1,10 @@
+package read_data;
+
 import junit.framework.TestCase;
 import org.apache.flink.api.common.functions.util.ListCollector;
 import org.apache.flink.util.Collector;
-import org.tuberlin.de.Job;
-import org.tuberlin.de.Taxidrive;
+import org.tuberlin.de.read_data.Job;
+import org.tuberlin.de.read_data.Taxidrive;
 
 import java.util.LinkedList;
 
