@@ -1,6 +1,7 @@
 package org.tuberlin.de.read_data;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
@@ -80,6 +81,9 @@ public class Job {
 		env.execute("Flink Java API Skeleton");
 	}
 
+
+
+
   	public static final class TaxidriveReader implements FlatMapFunction<String, Taxidrive> {
 
 	  @Override public void flatMap(String value, Collector<Taxidrive> out)
@@ -89,31 +93,24 @@ public class Job {
 
 
 	    String[] splittedText = value.split(",");
-	    taxidrive.setTaxiID(new BigInteger(splittedText[0],32));
-	    taxidrive.setLicenseID(new BigInteger(splittedText[1],32));
-	    taxidrive.setPickup_datetime(dateFormat.parse(splittedText[2]));
-	    taxidrive.setDropoff_datetime(dateFormat.parse(splittedText[3]));
+	    taxidrive.setTaxiID(splittedText[0]);
+	    taxidrive.setLicenseID(splittedText[1]);
+	    taxidrive.setPickup_datetime(splittedText[2]);
+	    taxidrive.setDropoff_datetime(splittedText[3]);
 	    taxidrive.setTrip_time_in_secs(Integer.parseInt(splittedText[4]));
 	    taxidrive.setTrip_distance(Double.parseDouble(splittedText[5]));
 	    taxidrive.setPickup_longitude(Double.parseDouble(splittedText[6]));
 	    taxidrive.setPickup_latitude(Double.parseDouble(splittedText[7]));
 	    taxidrive.setDropoff_longitude(Double.parseDouble(splittedText[8]));
 	    taxidrive.setDropoff_latitude(Double.parseDouble(splittedText[9]));
-
-	    if(splittedText[10].equals("CSH")){
-	      taxidrive.setPayment_type(Taxidrive.PAYMENT_TYPE.CASH);
-	    } else {
-	      taxidrive.setPayment_type(Taxidrive.PAYMENT_TYPE.CREDIT_CARD);
-	    }
-
+        taxidrive.setPayment_type(splittedText[10]);
 	    taxidrive.setFare_amount(Double.parseDouble(splittedText[11]));
 	    taxidrive.setSurcharge(Double.parseDouble(splittedText[12]));
 	    taxidrive.setMta_tax(Double.parseDouble(splittedText[13]));
 	    taxidrive.setTip_amount(Double.parseDouble(splittedText[14]));
 	    taxidrive.setTolls_amount(Double.parseDouble(splittedText[15]));
 	    taxidrive.setTotal_amount(Double.parseDouble(splittedText[16]));
-
-	    out.collect(taxidrive);
+          out.collect(taxidrive);
 	  }
 	}
 }

@@ -3,63 +3,84 @@ package org.tuberlin.de.read_data;
 import org.opengis.geometry.primitive.Point;
 
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * Created by Fabian on 20.10.2015.
+ * modified by Gerrit on 22.10.2015
+ *
+ * Taxidrive is a POJO-Type. Conditions:
+ *
+ * The class is public and standalone (no non-static inner class)
+ * The class has a public no-argument constructor
+ * All fields in the class (and all superclasses) are either public or or have a public getter and a setter method that follows the Java beans naming conventions for getters and setters.
+ * (https://ci.apache.org/projects/flink/flink-docs-master/internals/types_serialization.html)
+ *
  */
+
 public class Taxidrive {
-  private BigInteger taxiID;
-  private BigInteger licenseID;
-  private Date pickup_datetime;
-  private Date dropoff_datetime;
-  private int trip_time_in_secs;
-  private double trip_distance;
-  private double pickup_longitude;
-  private double pickup_latitude;
-  private double dropoff_longitude;
-  private double dropoff_latitude;
-  private PAYMENT_TYPE payment_type;
-  private double fare_amount;
-  private double surcharge;
-  private double mta_tax;
-  private double tip_amount;
-  private double tolls_amount;
-  private double total_amount;
+  public String taxiID;
+  public String licenseID;
+  public String pickup_datetime;
+  public String dropoff_datetime;
+  public int trip_time_in_secs;
+  public double trip_distance;
+  public double pickup_longitude;
+  public double pickup_latitude;
+  public double dropoff_longitude;
+  public double dropoff_latitude;
+  public String payment_type;
+  public double fare_amount;
+  public double surcharge;
+  public double mta_tax;
+  public double tip_amount;
+  public double tolls_amount;
+  public double total_amount;
+  public String pickupDistrict;
+  public String dropoffDistrict;
 
-  public Taxidrive(){
 
-  }
+  //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-  public BigInteger getTaxiID() {
+  public Taxidrive(){}
+
+  public String getTaxiID() {
     return taxiID;
   }
 
-  public void setTaxiID(BigInteger taxiID) {
+  public void setTaxiID(String taxiID) {
     this.taxiID = taxiID;
   }
 
-  public BigInteger getLicenseID() {
+  public String getLicenseID() {
     return licenseID;
   }
 
-  public void setLicenseID(BigInteger licenseID) {
+  public void setLicenseID(String licenseID) {
     this.licenseID = licenseID;
   }
 
-  public Date getPickup_datetime() {
+  public String getPickup_datetime() {
+    /*try {
+      return dateFormat.parse(pickup_datetime);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }*/
     return pickup_datetime;
   }
 
-  public void setPickup_datetime(Date pickup_datetime) {
+  public void setPickup_datetime(String pickup_datetime) {
     this.pickup_datetime = pickup_datetime;
   }
 
-  public Date getDropoff_datetime() {
+  public String getDropoff_datetime() {
     return dropoff_datetime;
   }
 
-  public void setDropoff_datetime(Date dropoff_datetime) {
+  public void setDropoff_datetime(String dropoff_datetime) {
     this.dropoff_datetime = dropoff_datetime;
   }
 
@@ -107,16 +128,24 @@ public class Taxidrive {
     return dropoff_latitude;
   }
 
+  public String getPickupDistrict(){ return pickupDistrict; }
+  public String getDropoffDistrict() {return dropoffDistrict;}
+
+  public void setDropoffDistrict(String dropoffDistrict) {this.dropoffDistrict = dropoffDistrict; }
+  public void setPickupDistrict(String pickupDistrict) {this.pickupDistrict = pickupDistrict; }
+
+
+
   public void setDropoff_latitude(double dropoff_latitude) {
     this.dropoff_latitude = dropoff_latitude;
   }
 
-  public PAYMENT_TYPE getPayment_type() {
+  public String getPayment_type() {
     return payment_type;
   }
 
   public void setPayment_type(
-                  PAYMENT_TYPE payment_type) {
+                  String payment_type) {
     this.payment_type = payment_type;
   }
 
@@ -168,7 +197,29 @@ public class Taxidrive {
     this.total_amount = total_amount;
   }
 
-  public enum PAYMENT_TYPE {
-    CASH, CREDIT_CARD
+  @Override
+  public String toString() {
+    return "Taxidrive{" +
+            "taxiID='" + taxiID + '\'' +
+            ", licenseID='" + licenseID + '\'' +
+            ", pickup_datetime='" + pickup_datetime + '\'' +
+            ", dropoff_datetime='" + dropoff_datetime + '\'' +
+            ", trip_time_in_secs=" + trip_time_in_secs +
+            ", trip_distance=" + trip_distance +
+            ", pickup_longitude=" + pickup_longitude +
+            ", pickup_latitude=" + pickup_latitude +
+            ", dropoff_longitude=" + dropoff_longitude +
+            ", dropoff_latitude=" + dropoff_latitude +
+            ", payment_type='" + payment_type + '\'' +
+            ", fare_amount=" + fare_amount +
+            ", surcharge=" + surcharge +
+            ", mta_tax=" + mta_tax +
+            ", tip_amount=" + tip_amount +
+            ", tolls_amount=" + tolls_amount +
+            ", total_amount=" + total_amount +
+            ", pickupDistrict='" + pickupDistrict + '\'' +
+            ", dropoffDistrict='" + dropoffDistrict + '\'' +
+            '}';
   }
+
 }

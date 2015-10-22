@@ -90,6 +90,7 @@ under the License.
 	-->
 
 	<dependencies>
+
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-java</artifactId>
@@ -114,11 +115,6 @@ under the License.
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
-			<version>${geotools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-swing</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
 	</dependencies>
