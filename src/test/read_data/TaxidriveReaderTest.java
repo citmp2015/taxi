@@ -21,7 +21,7 @@ public class TaxidriveReaderTest extends TestCase {
     new Job.TaxidriveReader().flatMap(inputString, collectedTaxidrives);
 
     Taxidrive createdTaxidrive = listTaxidrives.getFirst();
-    assertEquals(createdTaxidrive.getPayment_type(), Taxidrive.PAYMENT_TYPE.CASH);
+    assertEquals(createdTaxidrive.getPayment_type(), "CSH");
     assertEquals(createdTaxidrive.getTotal_amount(), 27.5);
   }
 }

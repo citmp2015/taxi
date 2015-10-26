@@ -57,12 +57,11 @@ import java.util.*;
 
 public class MapCoordToDistrict {
 
-	public static void main(String[] args) throws Exception {
+	public static DataSet<Taxidrive> readData(ExecutionEnvironment env, String dataPath) throws Exception {
 		// set up the execution environment
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 		// load taxi data from csv-file
-		DataSet<Taxidrive> taxidrives = env.readCsvFile("data/testData.csv")
+		DataSet<Taxidrive> taxidrives = env.readCsvFile(dataPath)
 				.pojoType(Taxidrive.class,
 						"taxiID",
 						"licenseID",
@@ -91,8 +90,10 @@ public class MapCoordToDistrict {
 		taxidrives = taxidrives.map(new DistrictMapper())
 				.withBroadcastSet(districtGeometries, "districtGeometries");
 
-		taxidrives.writeAsText("data/testDataWithDistricts");
-		taxidrives.print();
+
+	  	return taxidrives;
+		//taxidrives.writeAsText("data/testDataWithDistricts");
+		//taxidrives.print();
 		// execute program
 		//env.execute("Flink Java API Skeleton");
 	}
