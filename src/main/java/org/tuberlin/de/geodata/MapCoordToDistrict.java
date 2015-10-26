@@ -40,18 +40,7 @@ import java.util.*;
  */
 
 /**
- * Skeleton for a Flink Job.
- *
- * For a full example of a Flink Job, see the WordCountJob.java file in the
- * same package/directory or have a look at the website.
- *
- * You can also generate a .jar file that you can submit on your Flink
- * cluster.
- * Just type
- * 		mvn clean package
- * in the projects root directory.
- * You will find the jar in
- * 		target/flink-quickstart-0.1-SNAPSHOT-Sample.jar
+ * maps longitude, latitude coordinates from taxi trips to the appropriate district of manhattan.
  *
  */
 
@@ -91,7 +80,7 @@ public class MapCoordToDistrict {
 		taxidrives = taxidrives.map(new DistrictMapper())
 				.withBroadcastSet(districtGeometries, "districtGeometries");
 
-		taxidrives.writeAsText("data/testDataWithDistricts");
+		//taxidrives.writeAsText("data/testDataWithDistricts");
 		taxidrives.print();
 		// execute program
 		//env.execute("Flink Java API Skeleton");
@@ -104,7 +93,7 @@ public class MapCoordToDistrict {
 	 * @return a collection of districts containing geometries and district names
 	 */
 
-	private static Collection<District> extractDistrictsFromShapefile(String path) {
+	public static Collection<District> extractDistrictsFromShapefile(String path) {
 		File file = new File(path);
 		Map<String, Object> map = new HashMap<String, Object>();
 		FeatureSource<SimpleFeatureType, SimpleFeature> source = null;
