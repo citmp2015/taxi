@@ -1,7 +1,6 @@
 package org.tuberlin.de.read_data;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
@@ -26,7 +25,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 
 import org.apache.flink.util.Collector;
 
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 

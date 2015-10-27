@@ -1,0 +1,60 @@
+package org.tuberlin.de.distance_tip;
+
+public class TipAndDistance {
+    public double tip;
+    public double distance;
+    public int roundedDistance; // rounded down, used as groupkey
+    public int tripAmount;
+
+    public TipAndDistance() {
+    }
+
+    public TipAndDistance(double tip, double distance) {
+        this(tip, distance, 1, (int) distance);
+    }
+
+    // Only for Aggregation
+    public TipAndDistance(double tip, double distance, int tripAmount, int groupKey) {
+        this.tip = tip;
+        this.distance = distance;
+        this.tripAmount = tripAmount;
+        roundedDistance = groupKey;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+    public double getTip() {
+        return tip;
+    }
+
+    public void setTip(double tip) {
+        this.tip = tip;
+    }
+
+    public int getTripAmount() {
+        return tripAmount;
+    }
+
+    public void setTripAmount(int tripAmount) {
+        this.tripAmount = tripAmount;
+    }
+
+    public int getRoundedDistance() {
+        return roundedDistance;
+    }
+
+    public void setRoundedDistance(int roundedDistance) {
+        this.roundedDistance = roundedDistance;
+    }
+
+    @Override
+    public String toString() {
+        // GroupKey, average tip per mile, sum of tips, sum of distance, amount of trips, avg tip per trip (everything per group)
+        return roundedDistance + ", " + (tip/distance) + ", " + tip + ", " + distance +  ", " + tripAmount + ", " + (tip/tripAmount);
+    }
+}
