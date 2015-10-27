@@ -2,34 +2,45 @@ package org.tuberlin.de.district_per_hour;
 
 
 public class Pickup {
-    private String pickupDate;
-    private String pickupHour;
+    private String date;
+    private String hour;
     private String district;
     private int count;
 
-    private Pickup(Builder builder) {
+    /**
+     * For some reason it is necessary to have a default constructor.
+     */
+    public Pickup() {
+        this.date = "2015-10-25";
+        this.hour = "12";
+        this.district = "NYC";
+        this.count = 1;
+    }
 
+    public Pickup(Builder builder) {
+        this.date = builder.date;
+        this.hour = builder.hour;
+        this.district = builder.district;
+        this.count = builder.count;
     }
 
     public static class Builder {
-        private String pickupDate;
-        private String pickupHour;
+        private String date;
+        private String hour;
         private String district;
-        private double pickupLongitude;
-        private double pickupLatitude;
         private int count;
 
         public Builder() {
             count = 1;
         }
 
-        public Builder setPickupDate(String pickupDate) {
-            this.pickupDate = pickupDate;
+        public Builder setDate(String date) {
+            this.date = date;
             return this;
         }
 
-        public Builder setPickupHour(String pickupHour) {
-            this.pickupHour = pickupHour;
+        public Builder setHour(String hour) {
+            this.hour = hour;
             return this;
         }
 
@@ -48,27 +59,46 @@ public class Pickup {
         }
     }
 
-    public String getPickupDate() {
-        return pickupDate;
+    public String getDate() {
+        return date;
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public String getPickupHour() {
-        return pickupHour;
+    public String getHour() {
+        return hour;
     }
 
     public String getDistrict() {
         return district;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * For some reason it is necessary to have a setter for every attribute.
+     */
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setHour(String hour) {
+        this.hour = hour;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     @Override
     public String toString() {
         return "Pickup{" +
-                "pickupDatetime=" + pickupDate +
-                ", pickupHour=" + pickupHour +
+                "date=" + date +
+                ", hour=" + hour +
                 ", district=" + district +
                 ", count=" + count +
                 '}';

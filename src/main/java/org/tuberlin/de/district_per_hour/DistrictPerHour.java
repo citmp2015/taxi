@@ -23,8 +23,8 @@ public class DistrictPerHour {
                 DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
                 DateTime dateTime = formatter.parseDateTime(splittedText[2]);
                 Pickup pickup = new Pickup.Builder()
-                        .setPickupDate(dateTime.toString("yyyy-MM-dd"))
-                        .setPickupHour(dateTime.toString("HH"))
+                        .setDate(dateTime.toString("yyyy-MM-dd"))
+                        .setHour(dateTime.toString("HH"))
                         .setDistrict("NYC")
                         .build();
 
@@ -32,15 +32,15 @@ public class DistrictPerHour {
             }
         });
 
-        DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("pickupDate", "pickupHour").reduce((t1, t2) -> {
-            int sum = t1.getCount() + t2.getCount();
-            return new Pickup.Builder()
-                    .setPickupDate(t1.getPickupDate())
-                    .setPickupHour(t1.getPickupHour())
-                    .setDistrict(t1.getDistrict())
-                    .setCount(sum)
-                    .build();
-        });
+        DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("date", "hour").reduce((t1, t2) -> {
+                    int sum = t1.getCount() + t2.getCount();
+                    return new Pickup.Builder()
+                        .setDate(t1.getDate())
+                        .setHour(t1.getHour())
+                        .setDistrict(t1.getDistrict())
+                        .setCount(sum)
+                        .build();
+                });
 
         reducedDataSet.print();
     }
