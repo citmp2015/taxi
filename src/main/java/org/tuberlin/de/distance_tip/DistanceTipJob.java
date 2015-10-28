@@ -3,7 +3,6 @@ package org.tuberlin.de.distance_tip;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.operators.FlatMapOperator;
 import org.apache.flink.util.Collector;
 import org.tuberlin.de.read_data.Job;
 import org.tuberlin.de.read_data.Taxidrive;
@@ -39,7 +38,8 @@ public class DistanceTipJob {
                     }
                 });
 
-        DataSet<TipAndDistance> groupedReducedData = filteredAndConverted.groupBy(tipAndDistance -> tipAndDistance.roundedDistance)
+        DataSet<TipAndDistance> groupedReducedData = filteredAndConverted
+                .groupBy(tipAndDistance -> tipAndDistance.roundedDistance)
                 .reduce((t1, t2) -> new TipAndDistance(t1.tip + t2.tip, t1.distance + t2.distance, t1.tripAmount + t2.tripAmount, t1.roundedDistance));
         groupedReducedData.writeAsText("result/distance_vs_tip.result");
         env.execute("Distance vs Tip");

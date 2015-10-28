@@ -21,37 +21,6 @@ public class TipAndDistance {
         roundedDistance = groupKey;
     }
 
-    public double getDistance() {
-        return distance;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-    public double getTip() {
-        return tip;
-    }
-
-    public void setTip(double tip) {
-        this.tip = tip;
-    }
-
-    public int getTripAmount() {
-        return tripAmount;
-    }
-
-    public void setTripAmount(int tripAmount) {
-        this.tripAmount = tripAmount;
-    }
-
-    public int getRoundedDistance() {
-        return roundedDistance;
-    }
-
-    public void setRoundedDistance(int roundedDistance) {
-        this.roundedDistance = roundedDistance;
-    }
-
     @Override
     public String toString() {
         // GroupKey, average tip per mile, sum of tips, sum of distance, amount of trips, avg tip per trip (everything per group)
