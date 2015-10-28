@@ -1,7 +1,29 @@
-*.class
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
 .idea/
 *.iml
+*.iws
 
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+
+*.class
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 

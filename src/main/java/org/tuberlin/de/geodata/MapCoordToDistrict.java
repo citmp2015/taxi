@@ -104,7 +104,7 @@ public class MapCoordToDistrict {
 	 * @return a collection of districts containing geometries and district names
 	 */
 
-	private static Collection<District> extractDistrictsFromShapefile(String path) {
+	public static Collection<District> extractDistrictsFromShapefile(String path) {
 		File file = new File(path);
 		Map<String, Object> map = new HashMap<String, Object>();
 		FeatureSource<SimpleFeatureType, SimpleFeature> source = null;
