@@ -1,0 +1,11 @@
+{
+  "name": "JSON Geodata Generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generateJson.js",
+  "author": "",
+  "dependencies": {
+    "underscore": "^1.8.3",
+    "csv": "^0.4.6"
+  }
+}
