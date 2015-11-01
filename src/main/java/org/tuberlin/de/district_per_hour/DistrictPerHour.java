@@ -7,6 +7,7 @@ import org.apache.flink.util.Collector;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.tuberlin.de.read_data.Pickup;
 
 @SuppressWarnings("serial")
 public class DistrictPerHour {
