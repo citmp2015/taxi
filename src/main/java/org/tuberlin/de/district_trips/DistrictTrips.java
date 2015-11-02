@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.util.Collector;
+import org.tuberlin.de.geodata.MapCoordToDistrict;
 import org.tuberlin.de.read_data.Pickup;
 import org.tuberlin.de.read_data.Taxidrive;
 
@@ -14,7 +15,15 @@ public class DistrictTrips {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataSet<String> textInput = env.readTextFile("data/testDataWithDistricts");
+        String inputFilepath = "data/testData.csv";
+        final String dataWithDistrictsFilepath = "data/testDataWithDistricts";
+        if (args.length > 0) {
+            inputFilepath = args[0];
+        }
+
+        MapCoordToDistrict.main(new String[]{inputFilepath, dataWithDistrictsFilepath});
+
+        DataSet<String> textInput = env.readTextFile(dataWithDistrictsFilepath);
         DataSet<Pickup> taxidriveDataSet = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
 
             @Override
@@ -27,6 +36,7 @@ public class DistrictTrips {
                     collector.collect(pickup);
                 }
             }
+
         });
 
         DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("district").reduce((t1, t2) -> {

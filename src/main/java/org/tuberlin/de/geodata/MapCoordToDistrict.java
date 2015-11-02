@@ -7,6 +7,7 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
 
+import org.apache.flink.core.fs.*;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -61,8 +62,17 @@ public class MapCoordToDistrict {
 		// set up the execution environment
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
+		String inputFilepath = "data/testData.csv";
+		String outputFilepath = "data/testDataWithDistricts";
+		if (args != null && args.length > 1) {
+			inputFilepath = args[0];
+			outputFilepath = args[1];
+		} else if (args != null && args.length > 0) {
+			inputFilepath = args[0];
+		}
+
 		// load taxi data from csv-file
-		DataSet<Taxidrive> taxidrives = env.readCsvFile("data/testData.csv")
+		DataSet<Taxidrive> taxidrives = env.readCsvFile(inputFilepath)
 				.pojoType(Taxidrive.class,
 						"taxiID",
 						"licenseID",
@@ -91,10 +101,8 @@ public class MapCoordToDistrict {
 		taxidrives = taxidrives.map(new DistrictMapper())
 				.withBroadcastSet(districtGeometries, "districtGeometries");
 
-		taxidrives.writeAsText("data/testDataWithDistricts");
-		taxidrives.print();
-		// execute program
-		//env.execute("Flink Java API Skeleton");
+		taxidrives.writeAsText(outputFilepath, FileSystem.WriteMode.OVERWRITE);
+
 	}
 
 
@@ -146,7 +154,6 @@ public class MapCoordToDistrict {
 			features.close();
 			dataStore.dispose();
 		}
-
 
 		return null;
 	}
