@@ -82,13 +82,13 @@ public class MapCoordToDistrict {
 						"total_amount");
 
 		//load districts
-		Collection<District> col = extractDistrictsFromShapefile("data/manhattan_districts.shp");
-		DataSet<District> districtGeometries = env.fromCollection(col);
+		//Collection<District> col = extractDistrictsFromShapefile("data/manhattan_districts.shp");
+		//DataSet<District> districtGeometries = env.fromCollection(col);
 
 		// map pickup/dropoff-coordinates to districts
 		// district dataset is used as broadcast variable (https://cwiki.apache.org/confluence/display/FLINK/Variables+Closures+vs.+Broadcast+Variables)
-		taxidrives = taxidrives.map(new DistrictMapper())
-				.withBroadcastSet(districtGeometries, "districtGeometries");
+		//taxidrives = taxidrives.map(new DistrictMapper())
+				//.withBroadcastSet(districtGeometries, "districtGeometries");
 
 
 	  	return taxidrives;
