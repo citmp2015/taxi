@@ -1,4 +1,4 @@
-package org.tuberlin.de.clock_average_speed;
+package org.tuberlin.de.time_average_speed;
 
 public class TaxiTrip {
 	private String time;

@@ -1,4 +1,4 @@
-package org.tuberlin.de.clock_average_speed;
+package org.tuberlin.de.time_average_speed;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
