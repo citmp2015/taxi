@@ -2,6 +2,7 @@ package org.tuberlin.de.geodata;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -72,9 +73,39 @@ public class MapCoordToDistrict {
 						"total_amount");
 
 		//load districts
-		Collection<District> col = extractDistrictsFromShapefile("data/manhattan_districts.shp");
-		DataSet<District> districtGeometries = env.fromCollection(col);
+		//Collection<District> col = extractDistrictsFromShapefile("data/manhattan_districts.shp");
 
+		//DataSet<District> districtGeometries = env.fromCollection(col); //env.readCsvFile("data/districtsAsText").pojoType(District.class, "district","geometry");
+		DataSet<String> districtGeometriesAsText = env.readTextFile("data/districtsAsText");
+
+		DataSet<District> districtGeometries = districtGeometriesAsText.map(new MapFunction<String, District>() {
+			@Override
+			public District map(String s) throws Exception {
+				String sep[] = s.split(",");
+				District d = new District();
+				d.district = sep[0];
+
+				int countOfCoords = (sep.length - 1) / 2;
+				org.tuberlin.de.geodata.Coordinate[] geometry = new org.tuberlin.de.geodata.Coordinate[countOfCoords];
+				int geometryIndex = 0;
+
+				for (int i = 1; i < sep.length; i += 2) {
+					org.tuberlin.de.geodata.Coordinate c = new org.tuberlin.de.geodata.Coordinate();
+					c.x = Double.parseDouble(sep[i]);
+					c.y = Double.parseDouble(sep[i + 1]);
+					geometry[geometryIndex] = c;
+					geometryIndex += 1;
+				}
+				d.geometry = geometry;
+				System.out.println(d.toString());
+				return d;
+			}
+		});
+
+		//env.fromCollection(col);
+
+		//districtGeometries.writeAsText("data/districtsAsText");
+		//districtGeometries.print();
 		// map pickup/dropoff-coordinates to districts
 		// district dataset is used as broadcast variable (https://cwiki.apache.org/confluence/display/FLINK/Variables+Closures+vs.+Broadcast+Variables)
 		taxidrives = taxidrives.map(new DistrictMapper())
@@ -122,7 +153,7 @@ public class MapCoordToDistrict {
 				SimpleFeature feature = features.next();
 				District d =  new District();
 				d.district = (String) feature.getAttribute("label");
-				d.geometry = ((Geometry) feature.getDefaultGeometry()).getCoordinates();
+				d.geometry = convertGeometry(((Geometry) feature.getDefaultGeometry()).getCoordinates());
 				feats.add(d);
 			}
 			return feats;
@@ -140,9 +171,22 @@ public class MapCoordToDistrict {
 		return null;
 	}
 
+	private static org.tuberlin.de.geodata.Coordinate[] convertGeometry(Coordinate[] coordinates) {
+		org.tuberlin.de.geodata.Coordinate[] converted = new org.tuberlin.de.geodata.Coordinate[coordinates.length];
+
+		for (int i = 0; i < coordinates.length; i++) {
+			Coordinate c = coordinates[i];
+			org.tuberlin.de.geodata.Coordinate conv = new org.tuberlin.de.geodata.Coordinate();
+			conv.x = c.x;
+			conv.y = c.y;
+			converted[i] = conv;
+		}
+
+		return converted;
+	}
 
 
-  	public static class DistrictMapper extends RichMapFunction<Taxidrive, Taxidrive> {
+	public static class DistrictMapper extends RichMapFunction<Taxidrive, Taxidrive> {
 
 		private Collection<District> districtGeometries;
 
@@ -176,7 +220,7 @@ public class MapCoordToDistrict {
 	}
 
 
-	public static boolean coordinateInRegion(Coordinate[] region, Coordinate coord) {
+	public static boolean coordinateInRegion(org.tuberlin.de.geodata.Coordinate[] region, Coordinate coord) {
 		// adapt the code from http://stackoverflow.com/questions/12083093/how-to-define-if-a-determinate-point-is-inside-a-region-lat-long
 		int i, j;
 		boolean isInside = false;
