@@ -47,11 +47,9 @@ import java.text.SimpleDateFormat;
  */
 public class Job {
 
-	public static void main(String[] args) throws Exception {
-		// set up the execution environment
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+	public static DataSet<Taxidrive> readInput(ExecutionEnvironment env, String dataPath) throws Exception {
 
-	  	DataSet<String> textInput =  env.readTextFile(args[1]);
+	  	DataSet<String> textInput =  env.readTextFile(dataPath);
 		DataSet<Taxidrive> taxidriveDataSet = textInput.flatMap(new TaxidriveReader());
 
 		/**
@@ -78,7 +76,7 @@ public class Job {
 		 */
 
 		// execute program
-		env.execute("Flink Java API Skeleton");
+		return taxidriveDataSet;
 	}
 
 
@@ -91,26 +89,29 @@ public class Job {
 	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Taxidrive taxidrive = new Taxidrive();
 
+		  try {
+			  String[] splittedText = value.split(",");
+			  taxidrive.setTaxiID(splittedText[0]);
+			  taxidrive.setLicenseID(splittedText[1]);
+			  taxidrive.setPickup_datetime(splittedText[2]);
+			  taxidrive.setDropoff_datetime(splittedText[3]);
+			  taxidrive.setTrip_time_in_secs(Integer.parseInt(splittedText[4]));
+			  taxidrive.setTrip_distance(Double.parseDouble(splittedText[5]));
+			  taxidrive.setPickup_longitude(Double.parseDouble(splittedText[6]));
+			  taxidrive.setPickup_latitude(Double.parseDouble(splittedText[7]));
+			  taxidrive.setDropoff_longitude(Double.parseDouble(splittedText[8]));
+			  taxidrive.setDropoff_latitude(Double.parseDouble(splittedText[9]));
+			  taxidrive.setPayment_type(splittedText[10]);
+			  taxidrive.setFare_amount(Double.parseDouble(splittedText[11]));
+			  taxidrive.setSurcharge(Double.parseDouble(splittedText[12]));
+			  taxidrive.setMta_tax(Double.parseDouble(splittedText[13]));
+			  taxidrive.setTip_amount(Double.parseDouble(splittedText[14]));
+			  taxidrive.setTolls_amount(Double.parseDouble(splittedText[15]));
+			  taxidrive.setTotal_amount(Double.parseDouble(splittedText[16]));
+			  out.collect(taxidrive);
+		  } catch (Exception e){
 
-	    String[] splittedText = value.split(",");
-	    taxidrive.setTaxiID(splittedText[0]);
-	    taxidrive.setLicenseID(splittedText[1]);
-	    taxidrive.setPickup_datetime(splittedText[2]);
-	    taxidrive.setDropoff_datetime(splittedText[3]);
-	    taxidrive.setTrip_time_in_secs(Integer.parseInt(splittedText[4]));
-	    taxidrive.setTrip_distance(Double.parseDouble(splittedText[5]));
-	    taxidrive.setPickup_longitude(Double.parseDouble(splittedText[6]));
-	    taxidrive.setPickup_latitude(Double.parseDouble(splittedText[7]));
-	    taxidrive.setDropoff_longitude(Double.parseDouble(splittedText[8]));
-	    taxidrive.setDropoff_latitude(Double.parseDouble(splittedText[9]));
-        taxidrive.setPayment_type(splittedText[10]);
-	    taxidrive.setFare_amount(Double.parseDouble(splittedText[11]));
-	    taxidrive.setSurcharge(Double.parseDouble(splittedText[12]));
-	    taxidrive.setMta_tax(Double.parseDouble(splittedText[13]));
-	    taxidrive.setTip_amount(Double.parseDouble(splittedText[14]));
-	    taxidrive.setTolls_amount(Double.parseDouble(splittedText[15]));
-	    taxidrive.setTotal_amount(Double.parseDouble(splittedText[16]));
-          out.collect(taxidrive);
+		  }
 	  }
 	}
 }

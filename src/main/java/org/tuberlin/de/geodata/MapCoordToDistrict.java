@@ -57,6 +57,17 @@ import java.util.*;
 
 public class MapCoordToDistrict {
 
+	public static void main(String[] args) throws Exception {
+		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		DataSet<Taxidrive> taxidriveDataSet = readData(env, "data/testData.csv");
+
+		taxidriveDataSet.writeAsText("data/testDataWithDistricts");
+		taxidriveDataSet.print();
+		// execute program
+		env.execute("Flink Java API Skeleton");
+
+	}
+
 	public static DataSet<Taxidrive> readData(ExecutionEnvironment env, String dataPath) throws Exception {
 		// set up the execution environment
 
@@ -92,10 +103,6 @@ public class MapCoordToDistrict {
 
 
 	  	return taxidrives;
-		//taxidrives.writeAsText("data/testDataWithDistricts");
-		//taxidrives.print();
-		// execute program
-		//env.execute("Flink Java API Skeleton");
 	}
 
 

@@ -6,6 +6,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
 import org.tuberlin.de.geodata.MapCoordToDistrict;
+import org.tuberlin.de.read_data.Job;
 import org.tuberlin.de.read_data.Taxidrive;
 /**
  * Created by Fabian on 24.10.2015.
@@ -15,7 +16,7 @@ public class PaymentType_Tip {
   public static void main(String args[]) throws Exception {
 
     ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-    DataSet<Taxidrive> taxidriveDataSet = MapCoordToDistrict.readData(env, args[0]);
+    DataSet<Taxidrive> taxidriveDataSet = Job.readInput(env, args[0]);
 
     Tuple2<Double, Integer> tipCountCash = taxidriveDataSet
                     .filter(drive -> drive.getPayment_type().equals("CSH"))
