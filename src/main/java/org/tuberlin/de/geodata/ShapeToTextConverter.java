@@ -1,6 +1,8 @@
 package org.tuberlin.de.geodata;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -8,6 +10,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.tuberlin.de.read_data.Taxidrive;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +27,11 @@ import java.util.Map;
  */
 public class ShapeToTextConverter {
 
+
+    public static void main(String[] args) throws Exception {
+        convertShape("data/geodata/ny_districts.shp", "data/geodata/ny_districts.csv");
+
+    }
     public static void convertShape(String shapePath, String textFileOutputPath) {
         Collection<District> districts = extractDistrictsFromShapefile(shapePath);
 
@@ -54,7 +62,7 @@ public class ShapeToTextConverter {
 
     /**
      * @param path to shapefile (extension .shp)
-     * @return a collection of districts containing geometries and district names
+     * @return a collection of districts containing geometries and neighborhood names
      */
 
     private static Collection<District> extractDistrictsFromShapefile(String path) {
@@ -84,7 +92,8 @@ public class ShapeToTextConverter {
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
                 District d = new District();
-                d.district = (String) feature.getAttribute("label");
+                d.neighborhood = (String) feature.getAttribute("neighborho");
+                d.borough = (String) feature.getAttribute("borough");
                 d.geometry = convertGeometry(((Geometry) feature.getDefaultGeometry()).getCoordinates());
                 feats.add(d);
             }

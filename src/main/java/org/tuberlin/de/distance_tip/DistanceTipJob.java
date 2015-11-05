@@ -5,6 +5,7 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.util.Collector;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -34,9 +35,9 @@ public class DistanceTipJob {
 
         DataSet<TipAndDistance> filteredAndConverted = taxidriveDataSet
                 .filter(taxidrive -> taxidrive.getTrip_distance() > 0d)
-                // TODO why cant I use a lambda here?
-                // the following does not work:
-                //.flatMap((taxidrive, collector) -> collector.collect(new TipAndDistance(taxidrive.getTip_amount(), taxidrive.getTrip_distance())))
+                        // TODO why cant I use a lambda here?
+                        // the following does not work:
+                        //.flatMap((taxidrive, collector) -> collector.collect(new TipAndDistance(taxidrive.getTip_amount(), taxidrive.getTrip_distance())))
                 .flatMap(new FlatMapFunction<Taxidrive, TipAndDistance>() {
                     @Override
                     public void flatMap(Taxidrive taxidrive, Collector<TipAndDistance> collector) throws Exception {

@@ -29,9 +29,9 @@ public class DistrictTrips {
             @Override
             public void flatMap(String value, Collector<Pickup> collector) throws Exception {
                 Taxidrive taxidrive = new Gson().fromJson(value, Taxidrive.class);
-                if (taxidrive.getPickupDistrict() != null) {
+                if (taxidrive.getPickupNeighborhood() != null) {
                     Pickup pickup = new Pickup.Builder()
-                            .setDistrict(taxidrive.getPickupDistrict())
+                            .setDistrict(taxidrive.getPickupNeighborhood())
                             .build();
                     collector.collect(pickup);
                 }
@@ -39,7 +39,7 @@ public class DistrictTrips {
 
         });
 
-        DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("district").reduce((t1, t2) -> {
+        DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("neighborhood").reduce((t1, t2) -> {
             int sum = t1.getCount() + t2.getCount();
             return new Pickup.Builder()
                     .setDistrict(t1.getDistrict())
