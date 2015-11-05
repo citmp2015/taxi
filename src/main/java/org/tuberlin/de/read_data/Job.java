@@ -53,8 +53,8 @@ public class Job {
             taxidrive.setDropoff_datetime(splittedText[3]);
             taxidrive.setTrip_time_in_secs(Integer.parseInt(splittedText[4]));
             taxidrive.setTrip_distance(Double.parseDouble(splittedText[5]));
-            taxidrive.setPickup_longitude(Double.parseDouble(splittedText[6]));
-            taxidrive.setPickup_latitude(Double.parseDouble(splittedText[7]));
+            if (!splittedText[6].equals("")) taxidrive.setPickup_longitude(Double.parseDouble(splittedText[6]));
+            if (!splittedText[7].equals("")) taxidrive.setPickup_latitude(Double.parseDouble(splittedText[7]));
             if (!splittedText[8].equals("")) taxidrive.setDropoff_longitude(Double.parseDouble(splittedText[8]));
             if (!splittedText[9].equals("")) taxidrive.setDropoff_latitude(Double.parseDouble(splittedText[9]));
             taxidrive.setPayment_type(splittedText[10]);
