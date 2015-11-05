@@ -23,7 +23,7 @@ public class TipAndDistance {
 
     @Override
     public String toString() {
-        // GroupKey, average tip per mile, sum of tips, sum of distance, amount of trips, avg tip per trip (everything per group)
+        // GroupKey (rounded distance in miles), average tip per mile, sum of tips, sum of distance, amount of trips, avg tip per trip (everything per group)
         return roundedDistance + ", " + (tip/distance) + ", " + tip + ", " + distance +  ", " + tripAmount + ", " + (tip/tripAmount);
     }
 }
