@@ -41,48 +41,9 @@ import java.text.SimpleDateFormat;
  * target/flink-quickstart-0.1-SNAPSHOT-Sample.jar
  */
 public class Job {
-
-    public static void main(String[] args) throws Exception {
-        // set up the execution environment
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
-        DataSet<String> textInput = env.readTextFile(args[1]);
-        DataSet<Taxidrive> taxidriveDataSet = textInput.flatMap(new TaxidriveReader());
-
-        /**
-         * Here, you can start creating your execution plan for Flink.
-         *
-         * Start with getting some data from the environment, like
-         * 	env.readTextFile(textPath);
-         *
-         * then, transform the resulting DataSet<String> using operations
-         * like
-         * 	.filter()
-         * 	.flatMap()
-         * 	.join()
-         * 	.coGroup()
-         * and many more.
-         * Have a look at the programming guide for the Java API:
-         *
-         * http://flink.apache.org/docs/latest/programming_guide.html
-         *
-         * and the examples
-         *
-         * http://flink.apache.org/docs/latest/examples.html
-         *
-         */
-
-        // execute program
-        env.execute("Flink Java API Skeleton");
-    }
-
-
     public static final class TaxidriveReader implements FlatMapFunction<String, Taxidrive> {
-
         @Override
-        public void flatMap(String value, Collector<Taxidrive> out)
-                throws Exception {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        public void flatMap(String value, Collector<Taxidrive> out) throws Exception {
             Taxidrive taxidrive = new Taxidrive();
 
             String[] splittedText = value.split(",");
