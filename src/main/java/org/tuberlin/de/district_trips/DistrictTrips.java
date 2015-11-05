@@ -16,22 +16,24 @@ public class DistrictTrips {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         String inputFilepath = "data/testData.csv";
+        String districtsCsvFilepath = "data/geodata/ny_districts.csv";
         final String dataWithDistrictsFilepath = "data/testDataWithDistricts";
         if (args.length > 0) {
             inputFilepath = args[0];
         }
 
-        MapCoordToDistrict.main(new String[]{inputFilepath, dataWithDistrictsFilepath});
+        MapCoordToDistrict.main(new String[]{inputFilepath, districtsCsvFilepath});
 
         DataSet<String> textInput = env.readTextFile(dataWithDistrictsFilepath);
-        DataSet<Pickup> taxidriveDataSet = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
+        DataSet<Pickup> pickupDataset = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
 
             @Override
             public void flatMap(String value, Collector<Pickup> collector) throws Exception {
                 Taxidrive taxidrive = new Gson().fromJson(value, Taxidrive.class);
-                if (taxidrive.getPickupNeighborhood() != null) {
+                if (taxidrive.getPickupNeighborhood() != null && taxidrive.getPickupBorough() != null) {
                     Pickup pickup = new Pickup.Builder()
-                            .setDistrict(taxidrive.getPickupNeighborhood())
+                            .setNeighborhood(taxidrive.getPickupNeighborhood())
+                            .setBorough(taxidrive.getPickupBorough())
                             .build();
                     collector.collect(pickup);
                 }
@@ -39,15 +41,26 @@ public class DistrictTrips {
 
         });
 
-        DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("neighborhood").reduce((t1, t2) -> {
+
+        DataSet<Pickup> dsGroupedByNeighborhood = pickupDataset.groupBy("neighborhood").reduce((t1, t2) -> {
             int sum = t1.getCount() + t2.getCount();
             return new Pickup.Builder()
-                    .setDistrict(t1.getDistrict())
+                    .setNeighborhood(t1.getNeighborhood())
+                    .setBorough(t1.getBorough())
                     .setCount(sum)
                     .build();
         });
+        dsGroupedByNeighborhood.print();
 
-        reducedDataSet.print();
+        DataSet<Pickup> dsGroupedByBorough = pickupDataset.groupBy("borough").reduce((t1, t2) -> {
+            int sum = t1.getCount() + t2.getCount();
+            return new Pickup.Builder()
+                    .setNeighborhood(t1.getNeighborhood())
+                    .setBorough(t1.getBorough())
+                    .setCount(sum)
+                    .build();
+        });
+        dsGroupedByBorough.print();
 
     }
 }

@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.FileSystem;
 import org.tuberlin.de.read_data.Taxidrive;
 
 import java.util.Collection;
@@ -44,7 +45,7 @@ public class MapCoordToDistrict {
         // load taxi data from csv-file and map districts
         DataSet<Taxidrive> taxidrives = readData(env, taxiDatasetPath, districtsPath);
 
-        //taxidrives.writeAsText("data/testDataWithDistricts");
+        taxidrives.writeAsText("data/testDataWithDistricts", FileSystem.WriteMode.OVERWRITE);
         taxidrives.print();
 
         // execute program

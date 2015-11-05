@@ -26,7 +26,7 @@ public class DistrictPerHour {
                 Pickup pickup = new Pickup.Builder()
                         .setDate(dateTime.toString("yyyy-MM-dd"))
                         .setHour(dateTime.toString("HH"))
-                        .setDistrict("NYC")
+                        .setNeighborhood("NYC")
                         .build();
 
                 collector.collect(pickup);
@@ -38,7 +38,7 @@ public class DistrictPerHour {
             return new Pickup.Builder()
                     .setDate(t1.getDate())
                     .setHour(t1.getHour())
-                    .setDistrict(t1.getDistrict())
+                    .setNeighborhood(t1.getNeighborhood())
                     .setCount(sum)
                     .build();
         });

@@ -4,7 +4,8 @@ package org.tuberlin.de.read_data;
 public class Pickup {
     private String date;
     private String hour;
-    private String district;
+    private String neighborhood;
+    private String borough;
     private int count;
 
     /**
@@ -13,50 +14,16 @@ public class Pickup {
     public Pickup() {
         this.date = "2015-10-25";
         this.hour = "12";
-        this.district = "NYC";
+        this.neighborhood = "NYC";
         this.count = 1;
     }
 
     public Pickup(Builder builder) {
         this.date = builder.date;
         this.hour = builder.hour;
-        this.district = builder.district;
+        this.neighborhood = builder.neighborhood;
+        this.borough = builder.borough;
         this.count = builder.count;
-    }
-
-    public static class Builder {
-        private String date;
-        private String hour;
-        private String district;
-        private int count;
-
-        public Builder() {
-            count = 1;
-        }
-
-        public Builder setDate(String date) {
-            this.date = date;
-            return this;
-        }
-
-        public Builder setHour(String hour) {
-            this.hour = hour;
-            return this;
-        }
-
-        public Builder setDistrict(String district) {
-            this.district = district;
-            return this;
-        }
-
-        public Builder setCount(int count) {
-            this.count = count;
-            return this;
-        }
-
-        public Pickup build() {
-            return new Pickup(this);
-        }
     }
 
     public String getDate() {
@@ -67,8 +34,12 @@ public class Pickup {
         return hour;
     }
 
-    public String getDistrict() {
-        return district;
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public String getBorough() {
+        return borough;
     }
 
     public int getCount() {
@@ -86,8 +57,12 @@ public class Pickup {
         this.hour = hour;
     }
 
-    public void setDistrict(String district) {
-        this.district = district;
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+
+    public void setBorough(String borough) {
+        this.borough = borough;
     }
 
     public void setCount(int count) {
@@ -99,8 +74,51 @@ public class Pickup {
         return "Pickup{" +
                 "date=" + date +
                 ", hour=" + hour +
-                ", neighborhood=" + district +
+                ", neighborhood=" + neighborhood +
+                ", borough=" + borough +
                 ", count=" + count +
                 '}';
     }
+
+    public static class Builder {
+        private String date;
+        private String hour;
+        private String neighborhood;
+        private String borough;
+        private int count;
+
+        public Builder() {
+            count = 1;
+        }
+
+        public Builder setDate(String date) {
+            this.date = date;
+            return this;
+        }
+
+        public Builder setHour(String hour) {
+            this.hour = hour;
+            return this;
+        }
+
+        public Builder setNeighborhood(String neighborhood) {
+            this.neighborhood = neighborhood;
+            return this;
+        }
+
+        public Builder setBorough(String borough) {
+            this.borough = borough;
+            return this;
+        }
+
+        public Builder setCount(int count) {
+            this.count = count;
+            return this;
+        }
+
+        public Pickup build() {
+            return new Pickup(this);
+        }
+    }
+
 }
