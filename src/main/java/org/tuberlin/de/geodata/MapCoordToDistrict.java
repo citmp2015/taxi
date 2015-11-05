@@ -39,21 +39,22 @@ public class MapCoordToDistrict {
 
         //ShapeToTextConverter.convertShape("data/manhattan_districts.shp", "data/districts");
 
+        String taxiDatasetPath = args[0]; // local :"data/testData.csv"
+        String districtsPath = args[1]; //local : "data/districts"
         // load taxi data from csv-file and map districts
-        DataSet<Taxidrive> taxidrives = readData(env, "data/testData.csv");
+        DataSet<Taxidrive> taxidrives = readData(env, taxiDatasetPath, districtsPath);
 
         //taxidrives.writeAsText("data/testDataWithDistricts");
         taxidrives.print();
-
 
         // execute program
         //env.execute("Flink Java API Skeleton");
     }
 
-    public static DataSet<Taxidrive> readData(ExecutionEnvironment env, String dataPath) throws Exception {
+    public static DataSet<Taxidrive> readData(ExecutionEnvironment env, String taxiDatasetPath, String districtsPath) throws Exception {
         // set up the execution environment
         // load taxi data from csv-file
-        DataSet<Taxidrive> taxidrives = env.readCsvFile(dataPath)
+        DataSet<Taxidrive> taxidrives = env.readCsvFile(taxiDatasetPath)
                 .pojoType(Taxidrive.class,
                         "taxiID",
                         "licenseID",
@@ -74,7 +75,7 @@ public class MapCoordToDistrict {
                         "total_amount");
 
         //load districts
-        DataSet<String> districtGeometriesAsText = env.readTextFile("data/districts");
+        DataSet<String> districtGeometriesAsText = env.readTextFile(districtsPath);
 
         DataSet<District> districtGeometries = districtGeometriesAsText.map(new MapFunction<String, District>() {
             @Override

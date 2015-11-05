@@ -5,11 +5,11 @@ package org.tuberlin.de.geodata;
  */
 public class Coordinate {
     public double x;
+    public double y;
 
     @Override
     public String toString() {
         return x + "," + y;
     }
 
-    public double y;
 }
