@@ -117,6 +117,11 @@ under the License.
 			<artifactId>gt-shapefile</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.4</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -235,7 +240,7 @@ under the License.
 							<transformers>
 								<!-- add Main-Class to manifest file -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.tu-berlin.de.Job</mainClass>
+									<mainClass>org.tuberlin.de.distance_tip.DistanceTipJob</mainClass>
 								</transformer>
 							</transformers>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
@@ -252,7 +257,7 @@ under the License.
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>org.tu-berlin.de.Job</Main-Class>
+							<Main-Class>org.tuberlin.de.distance_tip.DistanceTipJob</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -268,8 +273,6 @@ under the License.
 				</configuration>
 			</plugin>
 		</plugins>
-		
-			
 
 		<pluginManagement>
 			<plugins>
@@ -284,7 +287,7 @@ under the License.
 						<dependency>
 							<groupId>org.eclipse.tycho</groupId>
 							<artifactId>tycho-compiler-jdt</artifactId>
-							<version>0.21.0</version>
+							<version>0.23.1</version>
 						</dependency>
 					</dependencies>
 				</plugin>
