@@ -1,13 +1,6 @@
 package org.tuberlin.de.read_data;
 
 import com.google.gson.Gson;
-import org.opengis.geometry.primitive.Point;
-
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by Fabian on 20.10.2015.
@@ -40,8 +33,12 @@ public class Taxidrive {
   public double tip_amount;
   public double tolls_amount;
   public double total_amount;
-  public String pickupDistrict;
-  public String dropoffDistrict;
+  public String pickupNeighborhood;
+  public String dropoffNeighborhood;
+  public String pickupBorough;
+
+
+  public String dropoffBorough;
 
 
   //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -129,18 +126,41 @@ public class Taxidrive {
     return dropoff_latitude;
   }
 
-  public String getPickupDistrict(){ return pickupDistrict; }
-  public String getDropoffDistrict() {return dropoffDistrict;}
+  public String getPickupNeighborhood() {
+    return pickupNeighborhood;
+  }
 
-  public void setDropoffDistrict(String dropoffDistrict) {this.dropoffDistrict = dropoffDistrict; }
-  public void setPickupDistrict(String pickupDistrict) {this.pickupDistrict = pickupDistrict; }
+  public String getDropoffNeighborhood() {
+    return dropoffNeighborhood;
+  }
 
+  public void setDropoffNeighborhood(String dropoffNeighborhood) {
+    this.dropoffNeighborhood = dropoffNeighborhood;
+  }
 
+  public void setPickupNeighborhood(String pickupNeighborhood) {
+    this.pickupNeighborhood = pickupNeighborhood;
+  }
+
+  public String getPickupBorough() {
+    return pickupBorough;
+  }
+
+  public void setPickupBorough(String pickupBorough) {
+    this.pickupBorough = pickupBorough;
+  }
+
+  public String getDropoffBorough() {
+    return dropoffBorough;
+  }
+
+  public void setDropoffBorough(String dropoffBorough) {
+    this.dropoffBorough = dropoffBorough;
+  }
 
   public void setDropoff_latitude(double dropoff_latitude) {
     this.dropoff_latitude = dropoff_latitude;
   }
-
   public String getPayment_type() {
     return payment_type;
   }

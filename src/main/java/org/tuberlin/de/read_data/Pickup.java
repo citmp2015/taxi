@@ -99,7 +99,7 @@ public class Pickup {
         return "Pickup{" +
                 "date=" + date +
                 ", hour=" + hour +
-                ", district=" + district +
+                ", neighborhood=" + district +
                 ", count=" + count +
                 '}';
     }

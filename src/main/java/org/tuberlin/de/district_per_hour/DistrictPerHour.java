@@ -34,14 +34,14 @@ public class DistrictPerHour {
         });
 
         DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("date", "hour").reduce((t1, t2) -> {
-                    int sum = t1.getCount() + t2.getCount();
-                    return new Pickup.Builder()
-                        .setDate(t1.getDate())
-                        .setHour(t1.getHour())
-                        .setDistrict(t1.getDistrict())
-                        .setCount(sum)
-                        .build();
-                });
+            int sum = t1.getCount() + t2.getCount();
+            return new Pickup.Builder()
+                    .setDate(t1.getDate())
+                    .setHour(t1.getHour())
+                    .setDistrict(t1.getDistrict())
+                    .setCount(sum)
+                    .build();
+        });
 
         reducedDataSet.print();
     }

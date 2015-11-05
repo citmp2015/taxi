@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 
 /**
- * maps longitude, latitude coordinates from taxi trips to the appropriate district of manhattan.
+ * maps longitude, latitude coordinates from taxi trips to the appropriate neighborhood of manhattan.
  */
 
 public class MapCoordToDistrict {
@@ -80,28 +80,32 @@ public class MapCoordToDistrict {
         DataSet<District> districtGeometries = districtGeometriesAsText.map(new MapFunction<String, District>() {
             @Override
             public District map(String s) throws Exception {
-                String sep[] = s.split(",");
-                District d = new District();
-                d.district = sep[0];
+                String sep[] = s.split(";");
+                if (sep.length % 2 != 0) {
+                    throw new Exception("invalid geometry");
+                }
 
-                int countOfCoords = (sep.length - 1) / 2;
-                org.tuberlin.de.geodata.Coordinate[] geometry = new org.tuberlin.de.geodata.Coordinate[countOfCoords];
+                District d = new District();
+                d.borough = sep[0];
+                d.neighborhood = sep[1];
+
+                int countOfCoords = (sep.length - 2) / 2;
+                Coordinate[] geometry = new Coordinate[countOfCoords];
                 int geometryIndex = 0;
 
-                for (int i = 1; i < sep.length; i += 2) {
-                    org.tuberlin.de.geodata.Coordinate c = new org.tuberlin.de.geodata.Coordinate();
+                for (int i = 2; i < sep.length; i += 2) {
+                    Coordinate c = new Coordinate();
                     c.x = Double.parseDouble(sep[i]);
                     c.y = Double.parseDouble(sep[i + 1]);
                     geometry[geometryIndex] = c;
                     geometryIndex += 1;
                 }
                 d.geometry = geometry;
-                System.out.println(d.toString());
                 return d;
             }
         });
         // map pickup/dropoff-coordinates to districts
-        // district dataset is used as broadcast variable (https://cwiki.apache.org/confluence/display/FLINK/Variables+Closures+vs.+Broadcast+Variables)
+        // neighborhood dataset is used as broadcast variable (https://cwiki.apache.org/confluence/display/FLINK/Variables+Closures+vs.+Broadcast+Variables)
         taxidrives = taxidrives.map(new DistrictMapper())
                 .withBroadcastSet(districtGeometries, "districtGeometries");
 
@@ -109,10 +113,7 @@ public class MapCoordToDistrict {
     }
 
 
-
-
-
-    public static boolean coordinateInRegion(org.tuberlin.de.geodata.Coordinate[] region, Coordinate coord) {
+    public static boolean coordinateInRegion(Coordinate[] region, Coordinate coord) {
         // adapt the code from http://stackoverflow.com/questions/12083093/how-to-define-if-a-determinate-point-is-inside-a-region-lat-long
         int i, j;
         boolean isInside = false;
@@ -155,7 +156,8 @@ public class MapCoordToDistrict {
                 c.y = taxidrive.dropoff_latitude;
                 // pickup location
                 if (coordinateInRegion(feat.geometry, c)) {
-                    taxidrive.setPickupDistrict(feat.district);
+                    taxidrive.setPickupNeighborhood(feat.neighborhood);
+                    taxidrive.setPickupBorough(feat.borough);
                     break;
                 }
             }
@@ -167,7 +169,8 @@ public class MapCoordToDistrict {
                 c.y = taxidrive.dropoff_latitude;
 
                 if (coordinateInRegion(feat.geometry, c)) {
-                    taxidrive.setDropoffDistrict(feat.district);
+                    taxidrive.setDropoffNeighborhood(feat.neighborhood);
+                    taxidrive.setDropoffBorough(feat.borough);
                     break;
                 }
             }
