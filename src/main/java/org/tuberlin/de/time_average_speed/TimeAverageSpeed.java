@@ -20,10 +20,13 @@ public class TimeAverageSpeed {
 	public static void main(String[] args) throws Exception {
 
 		String inputPath = "data/testData.csv";
+		String outputPath = "result/time_averagespeed_result.csv";
 		String districtsPath = "data/geodata/ny_districts.csv";
 
 		if (args.length > 0) {
 			inputPath = args[0];
+			outputPath = args[1];
+			districtsPath = args[2];
 		}
 
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -73,13 +76,13 @@ public class TimeAverageSpeed {
 			return trip;
 		});
 
-		createRanking(reducedData);
+		createRanking(reducedData).writeAsCsv(outputPath);
 		env.execute("Time AverageSpeed");
 
 	}
 
 	@SuppressWarnings("serial")
-	private static void createRanking(DataSet<TaxiTrip> data) throws Exception {
+	private static DataSet<Tuple2<String, Double>> createRanking(DataSet<TaxiTrip> data) throws Exception {
 		DataSet<Tuple2<String, Double>> tupleData = data.map(new MapFunction<TaxiTrip, Tuple2<String, Double>>() {
 
 			@Override
@@ -88,8 +91,10 @@ public class TimeAverageSpeed {
 			}
 		});
 
-		tupleData.sortPartition(1, Order.DESCENDING).setParallelism(1)
-				.writeAsCsv("result/time_averagespeed_result.csv");
+//		tupleData.sortPartition(1, Order.DESCENDING).setParallelism(1)
+//				.writeAsCsv("");
+		
+		return tupleData.sortPartition(1, Order.DESCENDING).setParallelism(1);
 	}
 
 }

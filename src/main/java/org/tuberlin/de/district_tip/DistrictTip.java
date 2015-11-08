@@ -16,10 +16,13 @@ public class DistrictTip {
 	public static void main(String[] args) throws Exception {
 
 		String inputPath = "data/testData.csv";
+		String outputPath = "result/district_tip_result.csv";
 		String districtsPath = "data/geodata/ny_districts.csv";
 
 		if (args.length > 0) {
 			inputPath = args[0];
+			outputPath = args[1];
+			districtsPath = args[2];
 		}
 
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -56,13 +59,13 @@ public class DistrictTip {
 			return trip;
 		});
 
-		createRanking(reducedData);
+		createRanking(reducedData).writeAsCsv(outputPath);
 		env.execute("District Tip");
 
 	}
 
 	@SuppressWarnings("serial")
-	private static void createRanking(DataSet<TaxiTip> data) throws Exception {
+	private static DataSet<Tuple2<String, Double>> createRanking(DataSet<TaxiTip> data) throws Exception {
 		DataSet<Tuple2<String, Double>> tupleData = data.map(new MapFunction<TaxiTip, Tuple2<String, Double>>() {
 
 			@Override
@@ -71,7 +74,7 @@ public class DistrictTip {
 			}
 		});
 
-		tupleData.sortPartition(1, Order.DESCENDING).setParallelism(1).writeAsCsv("result/district_tip_result.csv");
+		return tupleData.sortPartition(1, Order.DESCENDING).setParallelism(1);
 	}
 
 }
