@@ -11,75 +11,85 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
+import org.tuberlin.de.geodata.MapCoordToDistrict;
+import org.tuberlin.de.read_data.Taxidrive;
 
 public class TimeAverageSpeed {
 
-    @SuppressWarnings("serial")
-    public static void main(String[] args) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+	@SuppressWarnings("serial")
+	public static void main(String[] args) throws Exception {
 
-        DataSet<String> data = env.readTextFile("data/testData.csv");
+		String inputPath = "data/testData.csv";
+		String districtsPath = "data/geodata/ny_districts.csv";
 
-        DataSet<TaxiTrip> tripData = data.flatMap(new FlatMapFunction<String, TaxiTrip>() {
+		if (args.length > 0) {
+			inputPath = args[0];
+		}
 
-            @Override
-            public void flatMap(String value, Collector<TaxiTrip> collector) throws Exception {
-                String[] split = value.split(",");
+		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-                DateFormat parseFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                DateFormat outputFormat = new SimpleDateFormat("HH:mm");
+		DataSet<Taxidrive> taxidrives = MapCoordToDistrict.readData(env, inputPath, districtsPath);
 
-                String pickupTime = outputFormat.format(parseFormat.parse(split[2]));
-                double duration = (Double.parseDouble(split[4]) / 60) / 60;
-                double distance = Double.parseDouble(split[5]);
-                double speed = distance / duration;
-                double roundedSpeed = Math.round(speed * 100.0) / 100.0;
+		DataSet<Taxidrive> filteredTripData = taxidrives.filter(new FilterFunction<Taxidrive>() {
 
-                TaxiTrip trip = new TaxiTrip();
-                trip.setTime(pickupTime);
-                trip.setSpeed(roundedSpeed);
-                collector.collect(trip);
-            }
-        });
+			@Override
+			public boolean filter(Taxidrive trip) throws Exception {
+				return trip.getTrip_distance() > 0.0 && trip.getTrip_time_in_secs() > 0;
+			}
+		});
 
-        DataSet<TaxiTrip> filteredTripData = tripData.filter(new FilterFunction<TaxiTrip>() {
+		DataSet<TaxiTrip> tripData = filteredTripData.flatMap(new FlatMapFunction<Taxidrive, TaxiTrip>() {
 
-            @Override
-            public boolean filter(TaxiTrip trip) throws Exception {
-                return !Double.isNaN(trip.getSpeed());
-            }
-        });
+			@Override
+			public void flatMap(Taxidrive taxidrive, Collector<TaxiTrip> collector) throws Exception {
+				DateFormat parseFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				DateFormat outputFormat = new SimpleDateFormat("HH");
 
-        DataSet<TaxiTrip> reducedData = filteredTripData.groupBy("time").reduce((t1, t2) -> {
-            int sum = t1.getCount() + t2.getCount();
-            double sumSpeed = t1.getSpeed() + t2.getSpeed();
-            double roundedSumSpeed = Math.round(sumSpeed * 100.0) / 100.0;
-            double average = sumSpeed / sum;
-            double roundedAverage = Math.round(average * 100.0) / 100.0;
-            TaxiTrip trip = new TaxiTrip();
-            trip.setTime(t1.getTime());
-            trip.setCount(sum);
-            trip.setSpeed(roundedSumSpeed);
-            trip.setAverageSpeed(roundedAverage);
-            return trip;
-        });
+				String pickupTime = outputFormat.format(parseFormat.parse(taxidrive.getPickup_datetime()))
+						.concat(":00");
+				double duration = (taxidrive.getTrip_time_in_secs() / 60.0) / 60.0;
+				double distance = taxidrive.getTrip_distance();
+				double speed = distance / duration;
+				double roundedSpeed = Math.round(speed * 100.0) / 100.0;
 
-        showRanking(reducedData);
-        //reducedData.print();
+				TaxiTrip trip = new TaxiTrip();
+				trip.setTime(pickupTime);
+				trip.setSpeed(roundedSpeed);
+				collector.collect(trip);
+			}
+		});
 
-    }
+		DataSet<TaxiTrip> reducedData = tripData.groupBy("time").reduce((t1, t2) -> {
+			int sum = t1.getCount() + t2.getCount();
+			double sumSpeed = t1.getSpeed() + t2.getSpeed();
+			double roundedSumSpeed = Math.round(sumSpeed * 100.0) / 100.0;
+			double average = sumSpeed / sum;
+			double roundedAverage = Math.round(average * 100.0) / 100.0;
+			TaxiTrip trip = new TaxiTrip();
+			trip.setTime(t1.getTime());
+			trip.setCount(sum);
+			trip.setSpeed(roundedSumSpeed);
+			trip.setAverageSpeed(roundedAverage);
+			return trip;
+		});
 
-    @SuppressWarnings("serial")
-    private static void showRanking(DataSet<TaxiTrip> data) throws Exception {
-        DataSet<Tuple2<String, Double>> tupleData = data.map(new MapFunction<TaxiTrip, Tuple2<String, Double>>() {
+		createRanking(reducedData);
+		env.execute("Time AverageSpeed");
 
-            @Override
-            public Tuple2<String, Double> map(TaxiTrip trip) throws Exception {
-                return new Tuple2<String, Double>(trip.getTime(), trip.getAverageSpeed());
-            }
-        });
+	}
 
-        tupleData.sortPartition(1, Order.DESCENDING).first(10).print();
-    }
+	@SuppressWarnings("serial")
+	private static void createRanking(DataSet<TaxiTrip> data) throws Exception {
+		DataSet<Tuple2<String, Double>> tupleData = data.map(new MapFunction<TaxiTrip, Tuple2<String, Double>>() {
+
+			@Override
+			public Tuple2<String, Double> map(TaxiTrip trip) throws Exception {
+				return new Tuple2<String, Double>(trip.getTime(), trip.getAverageSpeed());
+			}
+		});
+
+		tupleData.sortPartition(1, Order.DESCENDING).setParallelism(1)
+				.writeAsCsv("result/time_averagespeed_result.csv");
+	}
 
 }
