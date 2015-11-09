@@ -15,11 +15,20 @@ public class DistrictTrips {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        String inputFilepath = "data/testData.csv";
-        String districtsCsvFilepath = "data/geodata/ny_districts.csv";
-        final String dataWithDistrictsFilepath = "data/testDataWithDistricts";
-        if (args.length > 0) {
-            inputFilepath = args[0];
+        String inputFilepath = "hdfs:///TaxiData/sorted_data.csv"; //local: "data/testData.csv";
+        String districtsCsvFilepath = "hdfs:///data/ny_districts.csv"; //local: "data/geodata/ny_districts.csv";
+        String dataWithDistrictsFilepath = "hdfs:///data/sorted_data_with_districts"; //local: "data/testDataWithDistricts";
+
+        if (args != null) {
+            if (args.length > 2) {
+                dataWithDistrictsFilepath = args[2];
+            }
+            if (args.length > 1) {
+                districtsCsvFilepath = args[1];
+            }
+            if (args.length > 0) {
+                districtsCsvFilepath = args[0];
+            }
         }
 
         MapCoordToDistrict.main(new String[]{inputFilepath, districtsCsvFilepath});
