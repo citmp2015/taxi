@@ -29,23 +29,33 @@ public class DistrictPerHour {
 
         MapCoordToDistrict.main(new String[]{"--input", inputFilepath, "--district", districtsCsvFilepath, "--inputwithdistrict", dataWithDistrictsFilepath});
 
-                DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-                DateTime dateTime = formatter.parseDateTime(splittedText[2]);
-                Pickup pickup = new Pickup.Builder()
-                        .setDate(dateTime.toString("yyyy-MM-dd"))
-                        .setHour(dateTime.toString("HH"))
-                        .setNeighborhood("NYC")
-                        .build();
+        DataSet<String> textInput = env.readTextFile(dataWithDistrictsFilepath);
+        DataSet<Pickup> pickupDataset = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
 
-                collector.collect(pickup);
+            @Override
+            public void flatMap(String value, Collector<Pickup> collector) throws Exception {
+                Taxidrive taxidrive = new Gson().fromJson(value, Taxidrive.class);
+                if (taxidrive.getPickupNeighborhood() != null && taxidrive.getPickupBorough() != null) {
+                    DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+                    DateTime dateTime = formatter.parseDateTime(taxidrive.getPickup_datetime());
+                    Pickup pickup = new Pickup.Builder()
+                            .setDate(dateTime.toString("yyyy-MM-dd"))
+                            .setHour(dateTime.toString("HH"))
+                            .setNeighborhood(taxidrive.getPickupNeighborhood())
+                            .setBorough(taxidrive.getPickupBorough())
+                            .build();
+                    collector.collect(pickup);
+                }
             }
+
         });
 
-        DataSet<Pickup> reducedDataSet = taxidriveDataSet.groupBy("date", "hour").reduce((t1, t2) -> {
+        DataSet<Pickup> reducedDataSet = pickupDataset.groupBy("borough", "date", "hour").reduce((t1, t2) -> {
             int sum = t1.getCount() + t2.getCount();
             return new Pickup.Builder()
                     .setDate(t1.getDate())
                     .setHour(t1.getHour())
+                    .setBorough(t1.getBorough())
                     .setNeighborhood(t1.getNeighborhood())
                     .setCount(sum)
                     .build();
