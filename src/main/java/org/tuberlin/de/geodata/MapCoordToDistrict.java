@@ -4,11 +4,16 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
 import org.tuberlin.de.read_data.Taxidrive;
 
 import java.util.Collection;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -40,12 +45,14 @@ public class MapCoordToDistrict {
 
         //ShapeToTextConverter.convertShape("data/manhattan_districts.shp", "data/districts");
 
-        String taxiDatasetPath = args[0]; // local :"data/testData.csv"
-        String districtsPath = args[1]; //local : "data/districts"
-        // load taxi data from csv-file and map districts
-        DataSet<Taxidrive> taxidrives = readData(env, taxiDatasetPath, districtsPath);
+        final ParameterTool params = ParameterTool.fromArgs(args);
+        final String inputFilepath = params.getRequired("input");
+        final String districtsCsvFilepath = params.getRequired("district");
+        final String dataWithDistrictsFilepath = params.getRequired("inputwithdistrict");
 
-        taxidrives.writeAsText("data/testDataWithDistricts", FileSystem.WriteMode.OVERWRITE);
+        // load taxi data from csv-file and map districts
+        DataSet<Taxidrive> taxidrives = readData(env, inputFilepath, districtsCsvFilepath);
+        taxidrives.writeAsText(dataWithDistrictsFilepath, FileSystem.WriteMode.NO_OVERWRITE);
         taxidrives.print();
 
         // execute program
