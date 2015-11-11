@@ -24,8 +24,8 @@ public class DistrictTrips {
 
         String inputFilepath = params.get("input", "hdfs:///TaxiData/sorted_data.csv");
         String districtsCsvFilepath = params.get("district", "hdfs:///data/ny_districts.csv");
-        String neighborhoodResultFilepath = params.get("district", "hdfs:///results/district_tips_neighborhoods.txt");
-        String boroughResultFilepath = params.get("district", "hdfs:///results/district_tips_boroughs.txt");
+        String neighborhoodResultFilepath = params.get("neighborhoodresult", " hdfs://asok05.cit.tu-berlin.de:54310/results/district_tips_neighborhoods.txt");
+        String boroughResultFilepath = params.get("boroughresult", " hdfs://asok05.cit.tu-berlin.de:54310/results/district_tips_boroughs.txt");
         if (isLocal) {
             inputFilepath = "data/sorted_data.csv";
             districtsCsvFilepath = "data/geodata/ny_districts.csv";
@@ -50,7 +50,7 @@ public class DistrictTrips {
         });
 
 
-        DataSet<Pickup> dsGroupedByNeighborhood = pickupDataset.groupBy("neighborhood").reduce((t1, t2) -> {
+        /*DataSet<Pickup> dsGroupedByNeighborhood = pickupDataset.groupBy("neighborhood").reduce((t1, t2) -> {
             int sum = t1.getCount() + t2.getCount();
             return new Pickup.Builder()
                     .setNeighborhood(t1.getNeighborhood())
@@ -59,7 +59,7 @@ public class DistrictTrips {
                     .build();
         });
         dsGroupedByNeighborhood.writeAsText(neighborhoodResultFilepath, FileSystem.WriteMode.OVERWRITE).setParallelism(1);
-        dsGroupedByNeighborhood.print();
+        dsGroupedByNeighborhood.print();*/
 
         DataSet<Pickup> dsGroupedByBorough = pickupDataset.groupBy("borough").reduce((t1, t2) -> {
             int sum = t1.getCount() + t2.getCount();
