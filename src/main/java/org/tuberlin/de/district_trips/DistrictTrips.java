@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.util.Collector;
 import org.tuberlin.de.geodata.MapCoordToDistrict;
 import org.tuberlin.de.read_data.Pickup;
@@ -15,23 +16,16 @@ public class DistrictTrips {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        String inputFilepath = "hdfs:///TaxiData/sorted_data.csv"; //local: "data/testData.csv";
-        String districtsCsvFilepath = "hdfs:///data/ny_districts.csv"; //local: "data/geodata/ny_districts.csv";
-        String dataWithDistrictsFilepath = "hdfs:///data/sorted_data_with_districts"; //local: "data/testDataWithDistricts";
+        final ParameterTool params = ParameterTool.fromArgs(args);
+//        final String inputFilepath = params.get("input", "data/bigger.csv");
+//        final String districtsCsvFilepath = params.get("district", "data/geodata/ny_districts.csv");
+//        final String dataWithDistrictsFilepath = params.get("inputwithdistrict", "data/testDataWithDistricts");
 
-        if (args != null) {
-            if (args.length > 2) {
-                dataWithDistrictsFilepath = args[2];
-            }
-            if (args.length > 1) {
-                districtsCsvFilepath = args[1];
-            }
-            if (args.length > 0) {
-                districtsCsvFilepath = args[0];
-            }
-        }
+        final String inputFilepath = params.get("input", "hdfs:///TaxiData/sorted_data.csv");
+        final String districtsCsvFilepath = params.get("district", "hdfs:///data/ny_districts.csv");
+        final String dataWithDistrictsFilepath = params.get("inputwithdistrict", "hdfs:///data/sorted_data_with_districts");
 
-        MapCoordToDistrict.main(new String[]{inputFilepath, districtsCsvFilepath});
+        MapCoordToDistrict.main(new String[]{"--input", inputFilepath, "--district", districtsCsvFilepath, "--inputwithdistrict", dataWithDistrictsFilepath});
 
         DataSet<String> textInput = env.readTextFile(dataWithDistrictsFilepath);
         DataSet<Pickup> pickupDataset = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
