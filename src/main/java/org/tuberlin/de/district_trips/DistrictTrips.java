@@ -36,9 +36,11 @@ public class DistrictTrips {
         DataSet<Taxidrive> taxidrives = MapCoordToDistrict.readData(env, inputFilepath, districtsCsvFilepath);
         DataSet<Pickup> pickupDataset = taxidrives.flatMap(new FlatMapFunction<Taxidrive, Pickup>() {
 
+            final String emptyString = "";
+
             @Override
             public void flatMap(Taxidrive taxidrive, Collector<Pickup> collector) throws Exception {
-                if (taxidrive.getPickupNeighborhood() != null && !taxidrive.getPickupNeighborhood().equals("") && taxidrive.getPickupBorough() != null && !taxidrive.getPickupBorough().equals("")) {
+                if (taxidrive.getPickupNeighborhood() != null && !taxidrive.getPickupNeighborhood().equals(emptyString) && taxidrive.getPickupBorough() != null && !taxidrive.getPickupBorough().equals(emptyString)) {
                     Pickup pickup = new Pickup.Builder()
                             .setNeighborhood(taxidrive.getPickupNeighborhood())
                             .setBorough(taxidrive.getPickupBorough())
