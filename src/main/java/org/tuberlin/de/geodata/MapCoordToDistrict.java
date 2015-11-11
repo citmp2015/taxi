@@ -7,6 +7,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
+import org.tuberlin.de.read_data.Job;
 import org.tuberlin.de.read_data.Taxidrive;
 
 import java.util.Collection;
@@ -52,7 +53,7 @@ public class MapCoordToDistrict {
 
         // load taxi data from csv-file and map districts
         DataSet<Taxidrive> taxidrives = readData(env, inputFilepath, districtsCsvFilepath);
-        taxidrives.writeAsText(dataWithDistrictsFilepath, FileSystem.WriteMode.NO_OVERWRITE);
+        taxidrives.writeAsText(dataWithDistrictsFilepath, FileSystem.WriteMode.OVERWRITE);
         taxidrives.print();
 
         // execute program
@@ -62,25 +63,8 @@ public class MapCoordToDistrict {
     public static DataSet<Taxidrive> readData(ExecutionEnvironment env, String taxiDatasetPath, String districtsPath) throws Exception {
         // set up the execution environment
         // load taxi data from csv-file
-        DataSet<Taxidrive> taxidrives = env.readCsvFile(taxiDatasetPath)
-                .pojoType(Taxidrive.class,
-                        "taxiID",
-                        "licenseID",
-                        "pickup_datetime",
-                        "dropoff_datetime",
-                        "trip_time_in_secs",
-                        "trip_distance",
-                        "pickup_longitude",
-                        "pickup_latitude",
-                        "dropoff_longitude",
-                        "dropoff_latitude",
-                        "payment_type",
-                        "fare_amount",
-                        "surcharge",
-                        "mta_tax",
-                        "tip_amount",
-                        "tolls_amount",
-                        "total_amount");
+        DataSet<String> textInput = env.readTextFile(taxiDatasetPath);
+        DataSet<Taxidrive> taxidrives = textInput.flatMap(new Job.TaxidriveReader());
 
         //load districts
         DataSet<String> districtGeometriesAsText = env.readTextFile(districtsPath);
