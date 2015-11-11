@@ -25,16 +25,12 @@ public class DistrictPerHour {
 
         final String inputFilepath = params.get("input", "hdfs:///TaxiData/sorted_data.csv");
         final String districtsCsvFilepath = params.get("district", "hdfs:///data/ny_districts.csv");
-        final String dataWithDistrictsFilepath = params.get("inputwithdistrict", "hdfs:///data/sorted_data_with_districts");
 
-        MapCoordToDistrict.main(new String[]{"--input", inputFilepath, "--district", districtsCsvFilepath, "--inputwithdistrict", dataWithDistrictsFilepath});
-
-        DataSet<String> textInput = env.readTextFile(dataWithDistrictsFilepath);
-        DataSet<Pickup> pickupDataset = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
+        DataSet<Taxidrive> taxidrives = MapCoordToDistrict.readData(env, inputFilepath, districtsCsvFilepath);
+        DataSet<Pickup> pickupDataset = taxidrives.flatMap(new FlatMapFunction<Taxidrive, Pickup>() {
 
             @Override
-            public void flatMap(String value, Collector<Pickup> collector) throws Exception {
-                Taxidrive taxidrive = new Gson().fromJson(value, Taxidrive.class);
+            public void flatMap(Taxidrive taxidrive, Collector<Pickup> collector) throws Exception {
                 if (taxidrive.getPickupNeighborhood() != null && taxidrive.getPickupBorough() != null) {
                     DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
                     DateTime dateTime = formatter.parseDateTime(taxidrive.getPickup_datetime());
