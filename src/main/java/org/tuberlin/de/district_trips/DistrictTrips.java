@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.util.Collector;
 import org.tuberlin.de.geodata.MapCoordToDistrict;
 import org.tuberlin.de.read_data.Pickup;
@@ -12,28 +13,32 @@ import org.tuberlin.de.read_data.Taxidrive;
 
 @SuppressWarnings("serial")
 public class DistrictTrips {
+
+    private static boolean isLocal = false;
+
     public static void main(String[] args) throws Exception {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         final ParameterTool params = ParameterTool.fromArgs(args);
-//        final String inputFilepath = params.get("input", "data/bigger.csv");
-//        final String districtsCsvFilepath = params.get("district", "data/geodata/ny_districts.csv");
-//        final String dataWithDistrictsFilepath = params.get("inputwithdistrict", "data/testDataWithDistricts");
 
-        final String inputFilepath = params.get("input", "hdfs:///TaxiData/sorted_data.csv");
-        final String districtsCsvFilepath = params.get("district", "hdfs:///data/ny_districts.csv");
-        final String dataWithDistrictsFilepath = params.get("inputwithdistrict", "hdfs:///data/sorted_data_with_districts");
+        String inputFilepath = params.get("input", "hdfs:///TaxiData/sorted_data.csv");
+        String districtsCsvFilepath = params.get("district", "hdfs:///data/ny_districts.csv");
+        String neighborhoodResultFilepath = params.get("district", "hdfs:///results/district_tips_neighborhoods.txt");
+        String boroughResultFilepath = params.get("district", "hdfs:///results/district_tips_boroughs.txt");
+        if (isLocal) {
+            inputFilepath = "data/sorted_data.csv";
+            districtsCsvFilepath = "data/geodata/ny_districts.csv";
+            neighborhoodResultFilepath = "data/results/district_tips_neighborhoods.txt";
+            boroughResultFilepath = "data/results/district_tips_boroughs.txt";
+        }
 
-        MapCoordToDistrict.main(new String[]{"--input", inputFilepath, "--district", districtsCsvFilepath, "--inputwithdistrict", dataWithDistrictsFilepath});
-
-        DataSet<String> textInput = env.readTextFile(dataWithDistrictsFilepath);
-        DataSet<Pickup> pickupDataset = textInput.flatMap(new FlatMapFunction<String, Pickup>() {
+        DataSet<Taxidrive> taxidrives = MapCoordToDistrict.readData(env, inputFilepath, districtsCsvFilepath);
+        DataSet<Pickup> pickupDataset = taxidrives.flatMap(new FlatMapFunction<Taxidrive, Pickup>() {
 
             @Override
-            public void flatMap(String value, Collector<Pickup> collector) throws Exception {
-                Taxidrive taxidrive = new Gson().fromJson(value, Taxidrive.class);
-                if (taxidrive.getPickupNeighborhood() != null && taxidrive.getPickupBorough() != null) {
+            public void flatMap(Taxidrive taxidrive, Collector<Pickup> collector) throws Exception {
+                if (taxidrive.getPickupNeighborhood() != null && !taxidrive.getPickupNeighborhood().equals("") && taxidrive.getPickupBorough() != null && !taxidrive.getPickupBorough().equals("")) {
                     Pickup pickup = new Pickup.Builder()
                             .setNeighborhood(taxidrive.getPickupNeighborhood())
                             .setBorough(taxidrive.getPickupBorough())
@@ -53,6 +58,7 @@ public class DistrictTrips {
                     .setCount(sum)
                     .build();
         });
+        dsGroupedByNeighborhood.writeAsText(neighborhoodResultFilepath, FileSystem.WriteMode.OVERWRITE).setParallelism(1);
         dsGroupedByNeighborhood.print();
 
         DataSet<Pickup> dsGroupedByBorough = pickupDataset.groupBy("borough").reduce((t1, t2) -> {
@@ -63,6 +69,7 @@ public class DistrictTrips {
                     .setCount(sum)
                     .build();
         });
+        dsGroupedByBorough.writeAsText(boroughResultFilepath, FileSystem.WriteMode.OVERWRITE).setParallelism(1);
         dsGroupedByBorough.print();
 
     }
